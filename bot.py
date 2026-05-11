@@ -35,7 +35,6 @@ TIMEZONE  = ZoneInfo("Asia/Jakarta")
 ALLOWED_CURRENCIES = {
     "USD", "EUR", "AUD", "NZD", "CNY", "CHF", "JPY", "CAD", "GBP", "IDR"
 }
-ALLOWED_IMPACT = {"medium", "high"}
 CHECK_INTERVAL = 5
 
 # ─── Emoji ──────────────────────────────────────────────────────────────────
@@ -135,8 +134,7 @@ def parse_ff(html: str, target_date: date) -> list[dict]:
                 if "high" in cls: impact = "high"
                 elif "medium" in cls: impact = "medium"
                 elif "low" in cls: impact = "low"
-        if impact not in ALLOWED_IMPACT:
-            continue
+        # Tampilkan semua impact, hanya filter negara
 
         # Nama event
         event_td = row.find("td", class_="calendar__event")
@@ -232,7 +230,7 @@ def fmt_schedule(events, d, title="JADWAL DATA EKONOMI"):
             if ev["previous"]: lines.append(f"       ⏮ Previous: `{ev['previous']}`")
         lines.append("")
 
-    lines += ["━━━━━━━━━━━━━━━━━━━━━━", "🔴 High  🟡 Medium  _\\* = logika terbalik_", "🔔 Notif otomatis saat data rilis"]
+    lines += ["━━━━━━━━━━━━━━━━━━━━━━", "🔴 High  🟡 Medium  🟢 Low  _\\* = logika terbalik_", "🔔 Notif otomatis saat data rilis"]
     return "\n".join(lines)
 
 def fmt_release(ev):
