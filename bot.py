@@ -30,15 +30,17 @@ TIMEZONE     = ZoneInfo("Asia/Jakarta")
 CHECK_INTERVAL = 5
 
 ALLOWED_CURRENCIES = {
-    "USD", "EUR", "AUD", "NZD", "CNY", "CHF", "JPY", "CAD", "GBP", "IDR"
+    "USD", "EUR", "AUD", "NZD", "CNY", "CHF", "JPY", "CAD", "GBP", "IDR",
+    "INR", "DEU", "FRA"  # India, Jerman, Prancis
 }
+ALLOWED_IMPACT = {"medium", "high"}
 
 # ─── Emoji ──────────────────────────────────────────────────────────────────
 IMPACT_EMOJI = {"high": "🔴", "medium": "🟡", "low": "🟢"}
 FLAG = {
     "USD": "🇺🇸", "EUR": "🇪🇺", "GBP": "🇬🇧", "JPY": "🇯🇵",
     "AUD": "🇦🇺", "CAD": "🇨🇦", "CHF": "🇨🇭", "NZD": "🇳🇿",
-    "CNY": "🇨🇳", "IDR": "🇮🇩",
+    "CNY": "🇨🇳", "IDR": "🇮🇩", "INR": "🇮🇳", "DEU": "🇩🇪", "FRA": "🇫🇷",
 }
 def flag(cur): return FLAG.get(cur.upper(), "🏳️")
 
@@ -46,7 +48,7 @@ def flag(cur): return FLAG.get(cur.upper(), "🏳️")
 COUNTRY_CURRENCY = {
     "US": "USD", "EU": "EUR", "GB": "GBP", "JP": "JPY",
     "AU": "AUD", "CA": "CAD", "CH": "CHF", "NZ": "NZD",
-    "CN": "CNY", "ID": "IDR",
+    "CN": "CNY", "ID": "IDR", "IN": "INR", "DE": "DEU", "FR": "FRA",
 }
 
 # ─── Data Terbalik ───────────────────────────────────────────────────────────
@@ -113,6 +115,10 @@ async def fetch_calendar(from_date: date, to_date: date = None) -> list[dict]:
         # Impact
         impact_raw = (item.get("impact") or "").lower()
         impact = impact_raw if impact_raw in ("high", "medium", "low") else "low"
+
+        # Filter hanya medium dan high
+        if impact not in ALLOWED_IMPACT:
+            continue
 
         event_name = item.get("event") or ""
         actual     = item.get("actual")
@@ -435,7 +441,7 @@ async def main():
     app.add_handler(CommandHandler("besok",   cmd_besok))
     app.add_handler(CommandHandler("rekap",   cmd_rekap))
     app.add_handler(CommandHandler("cari",    cmd_cari))
-    for cur in ["usd","eur","gbp","jpy","aud","cad","chf","nzd","cny","idr"]:
+    for cur in ["usd","eur","gbp","jpy","aud","cad","chf","nzd","cny","idr","inr","deu","fra"]:
         app.add_handler(CommandHandler(cur, make_negara_handler(cur.upper())))
 
     scheduler = AsyncIOScheduler(timezone=TIMEZONE)
